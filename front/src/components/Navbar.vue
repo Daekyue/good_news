@@ -1,13 +1,13 @@
 <template>
   <nav>
     <div class="nav-left">
-      <router-link to="/">홈</router-link> |
+      <router-link to="/Home">홈</router-link> |
       <router-link to="/news-feed">뉴스 피드</router-link> |
       <router-link to="/chatbot">챗봇</router-link> |
       <router-link to="/news-article">뉴스 기사</router-link>
     </div>
     <div class="nav-right">
-      <router-link to="/login">로그인</router-link>
+      <router-link to="/login">로그아웃</router-link>
     </div>
   </nav>
 </template>

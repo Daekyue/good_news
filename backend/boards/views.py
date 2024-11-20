@@ -1,6 +1,7 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from rest_framework import viewsets
+from .models import NewsArticle
+from .serializers import NewsArticleSerializer
 
-
-def hello(request):
-    return JsonResponse({'message': 'okay'})
+class NewsArticleViewSet(viewsets.ModelViewSet):
+    queryset = NewsArticle.objects.all()
+    serializer_class = NewsArticleSerializer

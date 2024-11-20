@@ -1,14 +1,16 @@
+<script>
+export default {
+  name: 'NewsFeed',
+};
+</script>
+
+
 <template>
   <div>
     <h1>뉴스 추천 페이지</h1>
     <!-- 뉴스 피드 추천 목록 -->
   </div>
 </template>
-<script>
-export default {
-  name: 'NewsFeed',
-};
-</script>
 
 <style scoped>
 div {
