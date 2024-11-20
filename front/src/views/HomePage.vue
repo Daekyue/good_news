@@ -1,31 +1,62 @@
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'HomePage',
+  data() {
+    return {
+      newsArticles: [],
+    };
+  },
+  created() {
+    this.fetchNewsArticles();
+  },
+  methods: {
+    fetchNewsArticles() {
+      axios
+        .get('http://localhost:8000/api/news/')
+        .then((response) => {
+          this.newsArticles = response.data;
+        })
+        .catch((error) => {
+          console.error('Error fetching news articles:', error);
+        });
+    },
+  },
+};
+</script>
+
 <template>
   <div>
-    <h1>홈 페이지</h1>
-    <nav>
-      <router-link to="/news-feed">뉴스 피드</router-link> |
-      <router-link to="/chatbot">챗봇</router-link> |
-      <router-link to="/news-article">뉴스 기사</router-link>
-    </nav>
-    <div>
-      <h2>나의 관심 카테고리</h2>
-      <!-- 관심 카테고리 표시 -->
+    <h1 class="news_list_head">뉴스 리스트</h1>
+    <div class="news_separator"></div>
+    <div class="news_description">
+      당신이 원하는 뉴스, 이제 AI가 직접 추천해드립니다!
     </div>
-    <div>
-      <h2>주요 키워드</h2>
-      <!-- 주요 키워드 표시 -->
+    <div v-if="newsArticles.length > 0">
+      <div v-for="article in newsArticles" :key="article.id" class="news_article">
+        <h2>{{ article.title }}</h2>
+        <p>{{ article.content }}</p>
+        <small>{{ article.date }}</small>
+      </div>
     </div>
-    <div>
-      <h2>주간 읽은 기사</h2>
-      <!-- 주간 읽은 기사 표시 -->
-    </div>
-    <div>
-      <h2>좋아요 누른 기사</h2>
-      <!-- 좋아요 누른 기사 표시 -->
+    <div v-else>
+      <p>현재 표시할 뉴스가 없습니다.</p>
     </div>
   </div>
 </template>
-<script>
-export default {
-  name: 'HomePage',
-};
-</script>
+
+<style>
+.news_list_head {
+  margin-bottom: 10px;
+}
+.news_separator {
+  border-top: 1px solid #e0e0e0;
+}
+.news_article {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+}
+</style>

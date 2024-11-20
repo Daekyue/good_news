@@ -1,10 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import NewsArticleViewSet
 
-# 앱 네임스페이스 생성
-app_name="boards"
+router = DefaultRouter()
+router.register(r'news', NewsArticleViewSet)
+
 urlpatterns = [
-    # name: 경로를 직접 사용하지 않고,
-    #   이름으로 쓰기 위해서 설정
-    path('', views.hello, name="hello"),
+    path('', include(router.urls)),
 ]

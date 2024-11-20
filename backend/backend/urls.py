@@ -24,7 +24,7 @@ urlpatterns = [
     # path('hello/', views.hello),
     # hello/ 경로로 요청이 오면
     # board 앱의 url 로 요청을 보내겠다.
-    path('api/v1/', include('boards.urls')),
+    path('api/', include('boards.urls')),
 
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
