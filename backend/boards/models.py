@@ -16,6 +16,7 @@ class NewsArticle(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)  # 분류
     date = models.DateField()  # 작성 날짜
     keywords = models.TextField(blank=True, null=True)  # 키워드, 추후 저장
+    url = models.TextField()
 
     def __str__(self):
         return self.title
