@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings  # 추가
 
 class NewsArticle(models.Model):
     CATEGORY_CHOICES = [
@@ -16,7 +17,9 @@ class NewsArticle(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)  # 분류
     date = models.DateField()  # 작성 날짜
     keywords = models.TextField(blank=True, null=True)  # 키워드, 추후 저장
-    url = models.TextField()
+    views_count = models.PositiveIntegerField(default=0)  # 조회수
+    likes_count = models.PositiveIntegerField(default=0)  # 좋아요 수
+    liked_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_articles', blank=True)  # 좋아요 누른 유저
 
     def __str__(self):
         return self.title

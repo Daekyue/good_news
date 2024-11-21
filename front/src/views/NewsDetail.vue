@@ -3,24 +3,51 @@ import axios from 'axios';
 
 export default {
   name: 'NewsDetail',
-  props: ['id'], // 라우터에서 전달된 ID를 props로 받음
+  props: ['id'],
   data() {
     return {
       article: null,
+      liked: false,
     };
   },
   created() {
     this.fetchArticle();
+    this.increaseViews();
   },
   methods: {
     fetchArticle() {
       axios
-        .get(`http://localhost:8000/api/news/${this.id}/`)
+        .get(`http://localhost:8000/api/news/${this.id}/`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem('token')}` // 인증 토큰 추가
+          }
+        })
         .then((response) => {
           this.article = response.data;
+          this.liked = response.data.liked; // 서버에서 받아온 liked 상태를 반영
         })
         .catch((error) => {
           console.error('Error fetching article:', error);
+        });
+    },
+    increaseViews() {
+      axios.post(`http://localhost:8000/api/news/${this.id}/increase_views/`)
+        .catch((error) => {
+          console.error('Error increasing views:', error);
+        });
+    },
+    toggleLike() {
+      axios.post(`http://localhost:8000/api/news/${this.id}/toggle_like/`, {}, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}` // 인증 토큰 추가
+        }
+      })
+        .then((response) => {
+          this.article.likes_count = response.data.likes_count;
+          this.liked = response.data.liked; // 좋아요 상태 업데이트
+        })
+        .catch((error) => {
+          console.error('Error toggling like:', error);
         });
     },
   },
@@ -37,7 +64,7 @@ export default {
           <h1 class="news-detail-title">{{ article.title }}</h1>
           <div class="news-detail-info">
             <p>작성일: {{ article.date }}</p>
-            <p>분류: {{ article.category }}</p>
+            <p>조회수: 👁️ {{ article.views_count }}</p>
           </div>
           <div class="news-detail-content">
             <p>{{ article.content }}</p>
@@ -47,6 +74,12 @@ export default {
             <span v-for="(keyword, index) in article.keywords.split(',')" :key="index" class="keyword-tag">
               {{ keyword.trim() }}
             </span>
+          </div>
+          <!-- 좋아요 버튼 섹션 -->
+          <div class="like-button-container">
+            <button @click="toggleLike" :class="['like-button', { liked: liked }]">
+              {{ liked ? '❤️ 좋아요 취소' : '🤍 좋아요' }} ({{ article.likes_count }})
+            </button>
           </div>
         </div>
         <div v-else>
@@ -73,7 +106,11 @@ export default {
       <h2>관련 기사</h2>
       <ul class="related-articles-list">
         <li v-for="related in relatedArticles" :key="related.id" class="related-article-item">
-          <h3>{{ related.title }}</h3>
+          <h3>
+            <router-link :to="{ name: 'NewsDetail', params: { id: related.id } }">
+              {{ related.title }}
+            </router-link>
+          </h3>
           <p>{{ related.date }}</p>
         </li>
       </ul>
@@ -82,7 +119,7 @@ export default {
 </template>
 
 <style scoped>
-/* #region Header Styles */
+/* 뉴스 페이지 전체 레이아웃 */
 .news-page-container {
   display: grid;
   grid-template-columns: 2fr 1fr; /* 왼쪽에 뉴스 상세보기와 챗봇(2)과 오른쪽에 관련 기사(1) */
@@ -143,32 +180,35 @@ export default {
   font-size: 0.9em;
 }
 
+/* 좋아요 버튼 섹션 */
+.like-button-container {
+  margin-top: 20px;
+}
+
+.like-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.like-button.liked {
+  background-color: #dc3545;
+}
+
+.like-button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* AI 뉴스비서 섹션 스타일 */
 .chatbot-section {
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.chat-container {
-  margin-bottom: 10px;
-}
-
-.chat-message {
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-}
-
-.user-message {
-  background-color: #d9edf7;
-  text-align: right;
-}
-
-.ai-message {
-  background-color: #f1f1f1;
-  text-align: left;
 }
 
 /* 관련 기사 섹션 스타일 */
@@ -201,5 +241,4 @@ export default {
   color: #777;
   margin: 0;
 }
-/* #endregion */
 </style>

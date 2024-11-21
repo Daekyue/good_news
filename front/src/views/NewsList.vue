@@ -72,6 +72,11 @@ export default {
             {{ keyword.trim() }}
           </span>
         </div>
+        <!-- 좋아요 수와 조회수 섹션 -->
+        <div class="likes-views-container">
+          <span class="like-count">❤️ {{ article.likes_count }}</span>
+          <span class="view-count">👁️ {{ article.views_count }}</span>
+        </div>
         <small>{{ article.date }}</small>
       </div>
     </div>
@@ -97,6 +102,24 @@ export default {
   border-radius: 10px;
   background-color: #ffffff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.news_article:hover {
+  transform: translateY(-5px);
+}
+
+/* 좋아요 수와 조회수 섹션 */
+.likes-views-container {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #777;
+  display: flex;
+  gap: 15px;
+}
+
+.like-count, .view-count {
+  display: inline-block;
 }
 
 /* 키워드 태그 스타일 */
