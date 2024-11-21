@@ -2,13 +2,13 @@ from django.db import models
 
 class NewsArticle(models.Model):
     CATEGORY_CHOICES = [
-        ('NEWS', '뉴스'),
-        ('FEATURE', '기획'),
-        ('REVIEW', '리뷰'),
-        ('INTERVIEW', '인터뷰'),
-        ('COLUMN', '칼럼'),
-        ('CRITIC', '평론'),
-        ('FESTIVAL', '영화제'),
+        ('뉴스', '뉴스'),
+        ('기획', '기획'),
+        ('리뷰', '리뷰'),
+        ('인터뷰', '인터뷰'),
+        ('칼럼', '칼럼'),
+        ('평론', '평론'),
+        ('영화제', '영화제'),
     ]
 
     title = models.CharField(max_length=255)  # 기사 제목
