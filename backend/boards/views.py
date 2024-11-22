@@ -9,7 +9,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
 
 class NewsArticleViewSet(viewsets.ModelViewSet):
-    queryset = NewsArticle.objects.all()
+    queryset = NewsArticle.objects.all().order_by('-date', '-id')
     serializer_class = NewsArticleSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [AllowAny]
