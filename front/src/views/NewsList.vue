@@ -36,6 +36,9 @@ export default {
         );
       }
     },
+    truncateText(text, maxLength) {
+      return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
   },
 };
 </script>
@@ -65,7 +68,7 @@ export default {
             {{ article.title }}
           </router-link>
         </h2>
-        <p>{{ article.content }}</p>
+        <p>{{ truncateText(article.content, 500) }}</p>
         <!-- 키워드 태그 섹션 -->
         <div class="news-keywords">
           <span v-for="(keyword, index) in article.keywords.split(',')" :key="index" class="keyword-tag">
@@ -85,6 +88,7 @@ export default {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .news_list_head {
