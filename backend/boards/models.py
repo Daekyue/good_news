@@ -15,7 +15,8 @@ class NewsArticle(models.Model):
     title = models.CharField(max_length=255)  # 기사 제목
     content = models.TextField()  # 기사 내용
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)  # 분류
-    date = models.DateField()  # 작성 날짜
+    date = models.DateField(null=True, default='')  # 작성 날짜
+    url = models.CharField(max_length=255)
     keywords = models.TextField(blank=True, null=True)  # 키워드, 추후 저장
     views_count = models.PositiveIntegerField(default=0)  # 조회수
     likes_count = models.PositiveIntegerField(default=0)  # 좋아요 수

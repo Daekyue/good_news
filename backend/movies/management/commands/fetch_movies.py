@@ -27,8 +27,9 @@ class Command(BaseCommand):
             return
 
         # 2. 영화 데이터 가져오기 (예: 인기 영화)
-        total_pages = 5  # 가져올 페이지 수를 설정합니다.
-        for page in range(1, total_pages + 1):
+        total_pages = 9  # 가져올 페이지 수를 설정합니다.
+        start_pages = 41
+        for page in range(start_pages, start_pages + total_pages + 1):
             movie_url = f'{base_url}/movie/popular?api_key={api_key}&language=ko-KR&page={page}'
             movie_response = requests.get(movie_url)
             if movie_response.status_code == 200:
@@ -58,7 +59,7 @@ class Command(BaseCommand):
                         except Genre.DoesNotExist:
                             self.stderr.write(self.style.ERROR(f'장르 ID {genre_id}를 찾을 수 없습니다.'))
 
-                self.stdout.write(self.style.SUCCESS(f'페이지 {page}/{total_pages} 데이터를 가져왔습니다.'))
+                self.stdout.write(self.style.SUCCESS(f'페이지 {page}/{start_pages + total_pages} 데이터를 가져왔습니다.'))
                 # API 호출 간 딜레이 설정 (TMDB API 정책 준수)
                 time.sleep(0.25)
             else:
