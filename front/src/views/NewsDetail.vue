@@ -8,6 +8,13 @@ export default {
     return {
       article: null,
       liked: false,
+      chatbotInput: '', // 사용자 입력 값
+      chatbotMessages: [
+        {
+          role: 'assistant',
+          content: '안녕하세요! 😊 어떻게 도와드릴까요? 보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!'
+        }
+      ]
     };
   },
   created() {
@@ -50,7 +57,40 @@ export default {
           console.error('Error toggling like:', error);
         });
     },
-  },
+    sendChatbotMessage() {
+      if (this.chatbotInput.trim() === '') return;
+
+      const userMessage = {
+        role: 'user',
+        content: this.chatbotInput
+      };
+      this.chatbotMessages.push(userMessage);
+
+      axios.post(`http://localhost:8000/api/chatbot/`, {
+        user_input: this.chatbotInput
+      }, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('token')}`
+        }
+      })
+        .then((response) => {
+          const botMessage = {
+            role: 'assistant',
+            content: response.data.answer
+          };
+          this.chatbotMessages.push(botMessage);
+          this.chatbotInput = '';
+        })
+        .catch((error) => {
+          console.error('Error communicating with chatbot:', error);
+          const errorMessage = {
+            role: 'assistant',
+            content: 'Sorry, there was an issue generating a response.'
+          };
+          this.chatbotMessages.push(errorMessage);
+        });
+    }
+  }
 };
 </script>
 
@@ -89,15 +129,15 @@ export default {
 
       <!-- AI 뉴스비서 섹션 -->
       <section class="chatbot-section">
-        <h2>AI 뉴스비서 뉴비</h2>
-        <p>뉴비에게 이 기사에 대해 궁금한 점을 자유롭게 물어보세요!</p>
+        <h2>AI News Assistant</h2>
+        <p>Feel free to ask Newbie anything about this article!</p>
         <div class="chat-container">
-          <div class="chat-message user-message">안녕</div>
-          <div class="chat-message ai-message">
-            안녕하세요! 😊 어떻게 도와드릴까요? 보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!
+          <div v-for="(message, index) in chatbotMessages" :key="index" class="chat-message" :class="message.role">
+            {{ message.content }}
           </div>
         </div>
-        <input type="text" placeholder="질문을 입력하세요..." />
+        <input v-model="chatbotInput" @keyup.enter="sendChatbotMessage" type="text"
+          placeholder="Enter your question..." />
       </section>
     </div>
 
@@ -122,7 +162,8 @@ export default {
 /* 뉴스 페이지 전체 레이아웃 */
 .news-page-container {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* 왼쪽에 뉴스 상세보기와 챗봇(2)과 오른쪽에 관련 기사(1) */
+  grid-template-columns: 2fr 1fr;
+  /* 왼쪽에 뉴스 상세보기와 챗봇(2)과 오른쪽에 관련 기사(1) */
   gap: 20px;
   padding: 20px;
 }
@@ -211,6 +252,26 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.chat-container {
+  margin-bottom: 10px;
+}
+
+.chat-message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.chat-message.user {
+  background-color: #d9edf7;
+  text-align: right;
+}
+
+.chat-message.assistant {
+  background-color: #f1f1f1;
+  text-align: left;
+}
+
 /* 관련 기사 섹션 스타일 */
 .related-articles-section {
   background-color: #ffffff;
@@ -218,7 +279,8 @@ export default {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
-  top: 20px; /* 화면에 고정시키기 위해 사용 */
+  top: 20px;
+  /* 화면에 고정시키기 위해 사용 */
   align-self: start;
 }
 

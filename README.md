@@ -18,3 +18,7 @@ pip freeze > requirements.txt
 
 ### 패키지 목록이 존재할 때 그것들을 설치하는 방법
 pip install -r requirements.txt
+
+sudo service postgresql start   # 서버 시작
+sudo service postgresql stop    # 서버 종료
+sudo service postgresql restart # 서버 재시작
