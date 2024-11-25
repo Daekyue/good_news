@@ -14,12 +14,14 @@ export default {
           role: 'assistant',
           content: '안녕하세요! 😊 어떻게 도와드릴까요? 보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!'
         }
-      ]
+      ],
+      relatedArticles: [] // 관련 기사 데이터를 저장할 곳
     };
   },
   created() {
     this.fetchArticle();
     this.increaseViews();
+    this.fetchRelatedArticles(); // 관련 기사 데이터 가져오기
   },
   methods: {
     fetchArticle() {
@@ -35,6 +37,17 @@ export default {
         })
         .catch((error) => {
           console.error('Error fetching article:', error);
+        });
+    },
+    fetchRelatedArticles() {
+      // 관련 기사 데이터를 가져오기 위한 API 호출
+      axios
+        .get(`http://localhost:8000/api/news/${this.id}/related_articles/`)
+        .then((response) => {
+          this.relatedArticles = response.data.related_articles; // 관련 기사 데이터 저장
+        })
+        .catch((error) => {
+          console.error('Error fetching related articles:', error);
         });
     },
     increaseViews() {
@@ -157,6 +170,7 @@ export default {
     </aside>
   </div>
 </template>
+
 
 <style scoped>
 /* 뉴스 페이지 전체 레이아웃 */

@@ -7,6 +7,7 @@ from .models import NewsArticle
 from .serializers import NewsArticleSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import AllowAny
+from .document_store import NewsDocumentStore  # FAISS 기반 뉴스 문서 저장소
 
 class NewsArticleViewSet(viewsets.ModelViewSet):
     queryset = NewsArticle.objects.all().order_by('-date', '-id')
@@ -61,3 +62,38 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
             data['liked'] = False
 
         return Response(data)
+
+    # FAISS를 활용한 관련 기사 가져오기
+    @action(detail=True, methods=['get'])
+    def related_articles(self, request, pk=None):
+        # 특정 기사 가져오기
+        article = get_object_or_404(NewsArticle, pk=pk)
+        
+        # NewsDocumentStore 초기화
+        doc_store = NewsDocumentStore(index_file="faiss_index.pkl")
+
+        # 기준 기사를 딕셔너리로 변환
+        reference_article = {
+            'title': article.title,
+            'content': article.content,
+            'keywords': article.keywords
+        }
+
+        # 유사도 검색 수행
+        relevant_docs = doc_store.find_similar_articles(reference_article, k=3)
+
+        # 유사한 기사의 정보를 가져오기
+
+        print(relevant_docs)
+
+        related_articles = [
+            {
+                # "id": doc.metadata.get('id', ''),
+                "title": doc['title'],
+                "keywords": doc['keywords']
+                # "date": doc.metadata.get('date', '')
+            }
+            for doc in relevant_docs
+        ]
+
+        return Response({"related_articles": related_articles}, status=status.HTTP_200_OK)
