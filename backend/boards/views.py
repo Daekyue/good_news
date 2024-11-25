@@ -88,10 +88,7 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
 
         related_articles = [
             {
-                # "id": doc.metadata.get('id', ''),
                 "title": doc['title'],
-                "keywords": doc['keywords']
-                # "date": doc.metadata.get('date', '')
             }
             for doc in relevant_docs
         ]
