@@ -1,6 +1,8 @@
 from langchain.vectorstores import FAISS
+import faiss
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
+from langchain.docstore.in_memory import InMemoryDocstore
 from typing import List, Dict
 import os
 import json
@@ -25,7 +27,16 @@ class NewsDocumentStore:
                 self.vectorstore = pickle.load(f)
             print("FAISS 인덱스를 로드했습니다.")
         else:
-            self.vectorstore = FAISS(embedding_function=self.embeddings)
+            # FAISS 기본 인덱스 생성
+            sample_vector = self.embeddings.embed_query("test")  # 리스트 형태의 벡터 반환
+            dimension = len(sample_vector)
+            index = faiss.IndexFlatL2(dimension)  # L2 거리 기반 FAISS 인덱스
+            self.vectorstore = FAISS(
+                index=index,
+                docstore=InMemoryDocstore({}),
+                index_to_docstore_id={},
+                embedding_function=self.embeddings
+            )
             print("새로운 FAISS 인덱스를 생성했습니다.")
     
     def save_index(self):
@@ -134,7 +145,7 @@ if __name__ == "__main__":
         data = json.load(file)  # JSON 배열이 Python 리스트로 변환됨
     
     # 문서 추가
-    # news_store.add_news_articles(data)
+    #news_store.add_news_articles(data)
     
     # 특정 기사 선택
     reference_article = data[15]  # 첫 번째 기사를 기준으로 예제 실행

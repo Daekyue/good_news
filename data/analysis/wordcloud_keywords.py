@@ -15,7 +15,7 @@ all_keywords = []
 for article in data:
 
     today = datetime.today()
-    min_date = today - timedelta(days=7)
+    min_date = today - timedelta(days=30)
     date = datetime.strptime(article['date'], "%Y-%m-%d")
 
     if min_date <= date <= today:
