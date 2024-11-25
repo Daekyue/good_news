@@ -1,3 +1,86 @@
+<template>
+  <div class="news-page-container">
+    <!-- 뉴스 상세보기 및 챗봇 섹션 래퍼 -->
+    <div class="left-section-wrapper">
+      <!-- 뉴스 상세보기 섹션 -->
+      <section class="news-detail-section">
+        <div v-if="article" class="news-detail-container">
+          <h1 class="news-detail-title">{{ article.title }}</h1>
+          <div class="news-detail-info">
+            <p>작성일: {{ article.date }}</p>
+            <p>조회수: 👁️ {{ article.views_count }}</p>
+          </div>
+          <div class="news-detail-content">
+            <p>{{ article.content }}</p>
+          </div>
+          <!-- 키워드 태그 섹션 -->
+          <div class="news-detail-keywords">
+            <span
+              v-for="(keyword, index) in article.keywords.split(',')"
+              :key="index"
+              class="keyword-tag"
+            >
+              {{ keyword.trim() }}
+            </span>
+          </div>
+          <!-- 좋아요 버튼 섹션 -->
+          <div class="like-button-container">
+            <button @click="toggleLike" :class="['like-button', { liked: liked }]">
+              {{ liked ? '❤️ 좋아요 취소' : '🤍 좋아요' }} ({{ article.likes_count }})
+            </button>
+          </div>
+        </div>
+        <div v-else>
+          <p>뉴스 기사를 불러오는 중입니다...</p>
+        </div>
+      </section>
+
+      <!-- AI 뉴스비서 섹션 -->
+      <section class="chatbot-section">
+        <h2>AI News Assistant</h2>
+        <p>보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!</p>
+        <div class="chat-container">
+          <div
+            v-for="(message, index) in chatbotMessages"
+            :key="index"
+            :class="['chat-message', message.role]"
+          >
+            <div class="message-bubble">
+              {{ message.content }}
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <input
+            v-model="chatbotInput"
+            @keyup.enter="sendChatbotMessage"
+            type="text"
+            placeholder="Enter your question..."
+          />
+          <button @click="sendChatbotMessage" class="send-button">
+            <span class="send-button-icon">📨</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- 관련 기사 섹션 -->
+    <aside class="related-articles-section">
+      <h2>관련 기사</h2>
+      <ul class="related-articles-list">
+        <li v-for="related in relatedArticles" :key="related.id" class="related-article-item">
+          <h3>
+            <router-link :to="{ name: 'NewsDetail', params: { id: related.id } }">
+              {{ related.title }}
+            </router-link>
+          </h3>
+          <p>{{ related.date }}</p>
+        </li>
+      </ul>
+    </aside>
+  </div>
+</template>
+
 <script>
 import axios from 'axios';
 
@@ -12,10 +95,11 @@ export default {
       chatbotMessages: [
         {
           role: 'assistant',
-          content: '안녕하세요! 😊 어떻게 도와드릴까요? 보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!'
-        }
+          content:
+            '안녕하세요! 😊 어떻게 도와드릴까요? 보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!',
+        },
       ],
-      relatedArticles: [] // 관련 기사 데이터를 저장할 곳
+      relatedArticles: [], // 관련 기사 데이터를 저장할 곳
     };
   },
   created() {
@@ -28,8 +112,8 @@ export default {
       axios
         .get(`http://localhost:8000/api/news/${this.id}/`, {
           headers: {
-            Authorization: `Token ${localStorage.getItem('token')}` // 인증 토큰 추가
-          }
+            Authorization: `Token ${localStorage.getItem('token')}`, // 인증 토큰 추가
+          },
         })
         .then((response) => {
           this.article = response.data;
@@ -51,17 +135,23 @@ export default {
         });
     },
     increaseViews() {
-      axios.post(`http://localhost:8000/api/news/${this.id}/increase_views/`)
+      axios
+        .post(`http://localhost:8000/api/news/${this.id}/increase_views/`)
         .catch((error) => {
           console.error('Error increasing views:', error);
         });
     },
     toggleLike() {
-      axios.post(`http://localhost:8000/api/news/${this.id}/toggle_like/`, {}, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}` // 인증 토큰 추가
-        }
-      })
+      axios
+        .post(
+          `http://localhost:8000/api/news/${this.id}/toggle_like/`,
+          {},
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem('token')}`, // 인증 토큰 추가
+            },
+          }
+        )
         .then((response) => {
           this.article.likes_count = response.data.likes_count;
           this.liked = response.data.liked; // 좋아요 상태 업데이트
@@ -75,21 +165,26 @@ export default {
 
       const userMessage = {
         role: 'user',
-        content: this.chatbotInput
+        content: this.chatbotInput,
       };
       this.chatbotMessages.push(userMessage);
 
-      axios.post(`http://localhost:8000/api/chatbot/`, {
-        user_input: this.chatbotInput
-      }, {
-        headers: {
-          Authorization: `Token ${localStorage.getItem('token')}`
-        }
-      })
+      axios
+        .post(
+          `http://localhost:8000/api/chatbot/`,
+          {
+            user_input: this.chatbotInput,
+          },
+          {
+            headers: {
+              Authorization: `Token ${localStorage.getItem('token')}`,
+            },
+          }
+        )
         .then((response) => {
           const botMessage = {
             role: 'assistant',
-            content: response.data.answer
+            content: response.data.answer,
           };
           this.chatbotMessages.push(botMessage);
           this.chatbotInput = '';
@@ -98,88 +193,24 @@ export default {
           console.error('Error communicating with chatbot:', error);
           const errorMessage = {
             role: 'assistant',
-            content: 'Sorry, there was an issue generating a response.'
+            content: '죄송합니다, 응답을 생성하는 데 문제가 발생했습니다.',
           };
           this.chatbotMessages.push(errorMessage);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
-<template>
-  <div class="news-page-container">
-    <!-- 뉴스 상세보기 및 챗봇 섹션 래퍼 -->
-    <div class="left-section-wrapper">
-      <!-- 뉴스 상세보기 섹션 -->
-      <section class="news-detail-section">
-        <div v-if="article" class="news-detail-container">
-          <h1 class="news-detail-title">{{ article.title }}</h1>
-          <div class="news-detail-info">
-            <p>작성일: {{ article.date }}</p>
-            <p>조회수: 👁️ {{ article.views_count }}</p>
-          </div>
-          <div class="news-detail-content">
-            <p>{{ article.content }}</p>
-          </div>
-          <!-- 키워드 태그 섹션 -->
-          <div class="news-detail-keywords">
-            <span v-for="(keyword, index) in article.keywords.split(',')" :key="index" class="keyword-tag">
-              {{ keyword.trim() }}
-            </span>
-          </div>
-          <!-- 좋아요 버튼 섹션 -->
-          <div class="like-button-container">
-            <button @click="toggleLike" :class="['like-button', { liked: liked }]">
-              {{ liked ? '❤️ 좋아요 취소' : '🤍 좋아요' }} ({{ article.likes_count }})
-            </button>
-          </div>
-        </div>
-        <div v-else>
-          <p>뉴스 기사를 불러오는 중입니다...</p>
-        </div>
-      </section>
-
-      <!-- AI 뉴스비서 섹션 -->
-      <section class="chatbot-section">
-        <h2>AI News Assistant</h2>
-        <p>Feel free to ask Newbie anything about this article!</p>
-        <div class="chat-container">
-          <div v-for="(message, index) in chatbotMessages" :key="index" class="chat-message" :class="message.role">
-            {{ message.content }}
-          </div>
-        </div>
-        <input v-model="chatbotInput" @keyup.enter="sendChatbotMessage" type="text"
-          placeholder="Enter your question..." />
-      </section>
-    </div>
-
-    <!-- 관련 기사 섹션 -->
-    <aside class="related-articles-section">
-      <h2>관련 기사</h2>
-      <ul class="related-articles-list">
-        <li v-for="related in relatedArticles" :key="related.id" class="related-article-item">
-          <h3>
-            <router-link :to="{ name: 'NewsDetail', params: { id: related.id } }">
-              {{ related.title }}
-            </router-link>
-          </h3>
-          <p>{{ related.date }}</p>
-        </li>
-      </ul>
-    </aside>
-  </div>
-</template>
-
-
 <style scoped>
+
 /* 뉴스 페이지 전체 레이아웃 */
 .news-page-container {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  /* 왼쪽에 뉴스 상세보기와 챗봇(2)과 오른쪽에 관련 기사(1) */
   gap: 20px;
   padding: 20px;
+  background-color: #f0f2f5; /* 전체 배경색 추가 */
 }
 
 /* 왼쪽 섹션 래퍼 (뉴스 상세보기 및 챗봇) */
@@ -193,8 +224,8 @@ export default {
 .news-detail-section {
   background-color: #ffffff;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 20px; /* 둥근 모서리 수정 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 그림자 수정 */
 }
 
 .news-detail-container {
@@ -203,21 +234,25 @@ export default {
 }
 
 .news-detail-title {
-  font-size: 2em;
+  font-size: 2.5em;
   font-weight: bold;
   margin-bottom: 15px;
+  color: #333;
 }
 
 .news-detail-info {
-  color: #777;
+  color: #888;
   font-size: 0.9em;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .news-detail-content {
-  line-height: 1.6;
+  line-height: 1.8;
   font-size: 1.1em;
   margin-bottom: 20px;
+  color: #444;
 }
 
 /* 키워드 태그 스타일 */
@@ -227,11 +262,11 @@ export default {
 
 .keyword-tag {
   display: inline-block;
-  background-color: #e0e0e0;
-  color: #333;
-  padding: 5px 10px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 8px 12px;
   margin: 5px 5px 0 0;
-  border-radius: 15px;
+  border-radius: 20px;
   font-size: 0.9em;
 }
 
@@ -241,61 +276,143 @@ export default {
 }
 
 .like-button {
-  background-color: #007bff;
-  color: #ffffff;
+  background-color: #ffebee;
+  color: #c62828;
   border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
+  padding: 12px 20px;
+  border-radius: 25px;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
+  font-size: 1em;
 }
 
 .like-button.liked {
-  background-color: #dc3545;
+  background-color: #c62828;
+  color: #ffffff;
 }
 
 .like-button:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* AI 뉴스비서 섹션 스타일 */
 .chatbot-section {
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.chatbot-section h2 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.chatbot-section p {
+  margin-bottom: 20px;
+  color: #666;
 }
 
 .chat-container {
+  max-height: 400px;
+  overflow-y: auto;
   margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-message {
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  display: flex;
+  margin-bottom: 10px;
 }
 
 .chat-message.user {
-  background-color: #d9edf7;
-  text-align: right;
+  justify-content: flex-end;
 }
 
 .chat-message.assistant {
-  background-color: #f1f1f1;
-  text-align: left;
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  word-wrap: break-word;
+  position: relative;
+}
+
+.chat-message.user .message-bubble {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border-bottom-right-radius: 5px;
+}
+
+.chat-message.assistant .message-bubble {
+  background-color: #f1f0f0;
+  color: #333;
+  border-bottom-left-radius: 5px;
+}
+
+/* 입력창 및 버튼 스타일 */
+.chat-input-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.chat-input-container input[type='text'] {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 1em;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.chat-input-container input[type='text']:focus {
+  border-color: #007bff;
+}
+
+.send-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  margin-left: 10px;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+}
+
+.send-button-icon {
+  font-size: 1.2em;
 }
 
 /* 관련 기사 섹션 스타일 */
 .related-articles-section {
   background-color: #ffffff;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 20px;
-  /* 화면에 고정시키기 위해 사용 */
   align-self: start;
+}
+
+.related-articles-section h2 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 .related-articles-list {
@@ -310,6 +427,15 @@ export default {
 .related-article-item h3 {
   font-size: 1em;
   margin: 0 0 5px;
+  color: #007bff;
+}
+
+.related-article-item h3 a {
+  text-decoration: none;
+}
+
+.related-article-item h3 a:hover {
+  text-decoration: underline;
 }
 
 .related-article-item p {
