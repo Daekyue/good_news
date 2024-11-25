@@ -23,8 +23,7 @@ class NewsDocumentStore:
         
         # self.index_file = "/home/ssafy/good_news/backend/boards/faiss_index.pkl"
         self.index_file = "boards/faiss_index.pkl"
-        print("여기야 여기 여기야 여기여기야 여기여기야 여기여기야 여기여기야 여기여기야 여기")
-        print(self.index_file)
+
         if os.path.exists(self.index_file):
             with open(self.index_file, "rb") as f:
                 self.vectorstore = pickle.load(f)
@@ -125,8 +124,8 @@ class NewsDocumentStore:
                 'similarity': 1 - score  # 점수를 유사도로 변환
             })
         
-        for r in results:
-            print(r['title'])
+        # for r in results:
+        #     print(r['title'])
             
         return results
 
