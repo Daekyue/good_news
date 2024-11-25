@@ -1,12 +1,16 @@
+# backend / boards / document_store.py
+
 from langchain.vectorstores import FAISS
 from langchain_community.vectorstores import PGVector
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.docstore.document import Document
 from typing import List, Dict, Optional
 import os
 import pickle
 from dotenv import load_dotenv
+from movies.models import Movie
+from django.core.cache import cache
 
 class NewsDocumentStore:
     """
@@ -20,8 +24,6 @@ class NewsDocumentStore:
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         
         # FAISS 벡터 저장소 초기화 또는 로드
-        
-        # self.index_file = "/home/ssafy/good_news/backend/boards/faiss_index.pkl"
         self.index_file = "boards/faiss_index.pkl"
 
         if os.path.exists(self.index_file):
@@ -123,9 +125,6 @@ class NewsDocumentStore:
                 'metadata': doc.metadata,
                 'similarity': 1 - score  # 점수를 유사도로 변환
             })
-        
-        # for r in results:
-        #     print(r['title'])
             
         return results
 
@@ -133,13 +132,13 @@ class NewsDocumentStore:
 class ChatbotDocumentStore:
     """
     챗봇을 위한 문서 저장 및 검색 시스템
-    pgvector를 백엔드로 사용하여 실시간 데이터 추가 및 검색을 구현합니다.
+    PGVector를 백엔드로 사용하여 영화 데이터를 사전 학습 데이터로 사용합니다.
     """
     
     def __init__(self):
         load_dotenv()
         
-        # pgvector 초기화
+        # PGVector 초기화
         self.connection_string = PGVector.connection_string_from_db_params(
             driver=os.getenv("DB_DRIVER", "psycopg2"),
             host=os.getenv("DB_HOST", "localhost"),
@@ -149,60 +148,96 @@ class ChatbotDocumentStore:
             password=os.getenv("DB_PASSWORD", "")
         )
 
-        # Initialize embedding model
+        # 임베딩 모델 초기화
         self.embeddings = OpenAIEmbeddings()
 
-        # Initialize vector store
+        # 벡터 저장소 초기화
         self.vectorstore = PGVector(
             connection_string=self.connection_string,
             embedding_function=self.embeddings,
             collection_name="chatbot_documents"
         )
-    
-    def add_chatbot_context(self, articles: List[Dict]) -> None:
-        """
-        챗봇 문서들을 pgvector 저장소에 추가합니다.
-        
-        Args:
-            articles: 문서 데이터 리스트
-        """
-        documents = []
-        for article in articles:
-            try:
-                content = f"{article['title']}\n\n{article['content']}"
-                documents.append(
-                    Document(
-                        page_content=content,
-                        metadata=article
-                    )
-                )
-            except Exception as e:
-                print(f"문서 처리 실패: {e}")
-                continue
 
-        print(f"처리된 문서 개수: {len(documents)}")
+        # 벡터 스토어에 데이터가 있는지 확인하고, 없으면 영화 데이터를 인제스트
+        if self.is_vectorstore_empty():
+            self.ingest_movies_data()
+            
+    def is_vectorstore_empty(self) -> bool:
+        """
+        벡터 저장소가 비어 있는지 확인합니다.
+        """
+        try:
+            # 임의로 문서를 검색하여 저장소가 비어 있는지 확인
+            docs = self.vectorstore.similarity_search("test", k=1)
+            return len(docs) == 0
+        except Exception:
+            return True
         
+    def ingest_movies_data(self):
+        """
+        영화 데이터를 데이터베이스에서 읽어와 문서로 변환하고 벡터 저장소에 추가합니다.
+        """
+        # 영화 데이터를 가져옵니다
+        movies = Movie.objects.all()
+        documents = []
+
+        for movie in movies:
+            # 영화 정보를 문자열로 만듭니다
+            content = f"제목: {movie.title}\n줄거리: {movie.overview}\n"
+
+            # 장르, 감독, 배우 정보를 추가합니다
+            genres = ", ".join([genre.name for genre in movie.genres.all()])
+            if genres:
+                content += f"장르: {genres}\n"
+            directors = ", ".join([director.name for director in movie.directors.all()])
+            if directors:
+                content += f"감독: {directors}\n"
+            actors = ", ".join([actor.name for actor in movie.actors.all()])
+            if actors:
+                content += f"배우: {actors}\n"
+            if movie.release_date:
+                content += f"개봉일: {movie.release_date}\n"
+
+            # 메타데이터를 구성합니다
+            metadata = {
+                'title': movie.title,
+                'tmdb_id': movie.tmdb_id,
+                'release_date': str(movie.release_date),
+                'genres': genres,
+                'directors': directors,
+                'actors': actors
+            }
+
+            documents.append(
+                Document(
+                    page_content=content,
+                    metadata=metadata
+                )
+            )
+
+        print(f"총 {len(documents)}개의 영화를 벡터 저장소에 추가합니다.")
+
         # 벡터 저장소에 문서 추가
         self.vectorstore.add_documents(documents)
 
     def similarity_search(self, query: str, k: int = 3) -> List[Dict]:
         """
-        Perform similarity-based search for chatbot context.
+        사용자 질문을 기반으로 유사한 영화 정보를 검색합니다.
         """
-        # Perform similarity search
+        # 유사도 검색 수행
         docs = self.vectorstore.similarity_search_with_score(
             query, 
             k=k
         )
 
-        # Format results
+        # 결과 포맷팅
         results = []
         for doc, score in docs:
             results.append({
                 'title': doc.metadata.get('title', ''),
                 'content': doc.page_content,
                 'metadata': doc.metadata,
-                'similarity': 1 - score  # Convert score to similarity
+                'similarity': 1 - score  # 점수를 유사도로 변환
             })
 
         return results
