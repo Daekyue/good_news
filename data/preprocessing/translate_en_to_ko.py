@@ -32,18 +32,17 @@ def process_and_translate_json(input_file, output_file):
         data = json.load(f)
     
     for d in data:
-        print(d)
 
         # title과 content만 번역
-        title = d["Title"]
-        content = d["Content"]
+        title = d["title"]
+        content = d["content"]
         
         translated_title = translate_to_korean(title)
         translated_content = translate_to_korean(content)
         
         # 번역된 데이터를 원래 데이터에 갱신
-        d["Title"] = translated_title
-        d["Content"] = translated_content
+        d["title"] = translated_title
+        d["content"] = translated_content
     
     # 번역된 데이터를 다시 JSON 파일로 저장
     with open(output_file, 'w', encoding='utf-8') as f:

@@ -15,6 +15,11 @@ def load_json_files_and_merge(base_directory):
             df = df.dropna()
             df['date'] = df['date'].astype(str)
 
+            print(df.shape)
+            df = df.drop_duplicates()
+            print(df.shape)
+
+            
             lst += df.to_dict(orient='records')       
                 
     return lst
