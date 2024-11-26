@@ -55,7 +55,7 @@ class ChatbotAPIView(APIView):
         ]
 
         # OpenAI LLM 인스턴스 생성 및 응답 생성
-        llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+        llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7)
         response = llm(messages)
 
         return Response({"answer": response.content})

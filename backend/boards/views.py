@@ -2,12 +2,12 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import TokenAuthentication
 from .models import NewsArticle
 from .serializers import NewsArticleSerializer
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import AllowAny
-from .document_store import NewsDocumentStore  # FAISS 기반 뉴스 문서 저장소
+from .document_store import NewsDocumentStore
+from datetime import datetime, timedelta  # 여기에 임포트 추가
 
 class NewsArticleViewSet(viewsets.ModelViewSet):
     queryset = NewsArticle.objects.all().order_by('-date', '-id')
@@ -62,8 +62,8 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
             data['liked'] = False
 
         return Response(data)
-
-    # FAISS를 활용한 관련 기사 가져오기
+        
+        # FAISS를 활용한 관련 기사 가져오기
     @action(detail=True, methods=['get'])
     def related_articles(self, request, pk=None):
         # 특정 기사 가져오기
@@ -94,3 +94,43 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
         ]
 
         return Response({"related_articles": related_articles}, status=status.HTTP_200_OK)
+
+    # 일주일간 조회수가 높은 기사 가져오기 (6번 섹션)
+    @action(detail=False, methods=['get'])
+    def top_articles(self, request):
+        one_week_ago = datetime.now() - timedelta(days=7)
+        top_articles = NewsArticle.objects.filter(date__gte=one_week_ago).order_by('-views_count')[:5]
+        serializer = self.get_serializer(top_articles, many=True)
+        return Response(serializer.data)
+
+    # 추천 기사 가져오기 (2, 3, 4번 섹션)
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def recommend(self, request):
+        user = request.user
+        liked_articles = user.liked_articles.all()
+
+        if not liked_articles:
+            return Response({'message': '좋아요를 누른 기사가 없어 추천을 제공할 수 없습니다.'}, status=status.HTTP_200_OK)
+
+        # NewsDocumentStore 초기화
+        doc_store = NewsDocumentStore(index_file="faiss_index.pkl")
+
+        # 사용자가 좋아요를 누른 기사로부터 추천 기사 추출
+        recommended_docs = []
+        for article in liked_articles:
+            reference_article = {
+                'title': article.title,
+                'content': article.content,
+                'keywords': article.keywords
+            }
+            similar_docs = doc_store.find_similar_articles(reference_article, k=2)
+            recommended_docs.extend(similar_docs)
+
+        # 중복 제거 및 사용자가 이미 좋아요 누른 기사 제외
+        recommended_article_ids = set(doc['id'] for doc in recommended_docs)
+        liked_article_ids = set(liked_articles.values_list('id', flat=True))
+        recommended_article_ids -= liked_article_ids
+
+        recommended_articles = NewsArticle.objects.filter(id__in=recommended_article_ids)[:3]
+        serializer = self.get_serializer(recommended_articles, many=True)
+        return Response(serializer.data)

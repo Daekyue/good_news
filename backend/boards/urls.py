@@ -12,4 +12,8 @@ urlpatterns = [
     path('news/wordcloud/', WordCloudAPIView.as_view(), name='wordcloud'),
     path('chatbot/', ChatbotAPIView.as_view(), name='chatbot'),
     path('', include(router.urls)),
+
+    # 새로운 API 엔드포인트 추가
+    path('news/recommendations/', NewsArticleViewSet.as_view({'get': 'recommendations'}), name='recommendations'),
+    path('news/top/', NewsArticleViewSet.as_view({'get': 'top'}), name='top_articles'),
 ]
