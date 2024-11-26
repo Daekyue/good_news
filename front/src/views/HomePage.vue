@@ -14,7 +14,7 @@
     <!-- 추천 시스템 섹션 (2, 3, 4번) -->
     <section class="recommend-section" id="recommend1">
       <h2>추천 영화</h2>
-      <div v-if="recommendedMovies.length > 0">
+      <div v-if="recommendedMovies && recommendedMovies.length > 0">
         <div v-for="movie in recommendedMovies" :key="movie.id" class="movie-item">
           <h3>{{ movie.title }}</h3>
           <p>{{ truncateText(movie.overview, 100) }}</p>
@@ -28,7 +28,7 @@
     <!-- 추천 감독 섹션 (3번) -->
     <section class="recommend-section" id="recommend2">
       <h2>추천 감독</h2>
-      <div v-if="recommendedDirectors.length > 0">
+      <div v-if="recommendedDirectors && recommendedDirectors.length > 0">
         <ul>
           <li v-for="director in recommendedDirectors" :key="director.id">
             {{ director.name }}
@@ -43,7 +43,7 @@
     <!-- 추천 배우 섹션 (4번) -->
     <section class="recommend-section" id="recommend3">
       <h2>추천 배우</h2>
-      <div v-if="recommendedActors.length > 0">
+      <div v-if="recommendedActors && recommendedActors.length > 0">
         <ul>
           <li v-for="actor in recommendedActors" :key="actor.id">
             {{ actor.name }}
@@ -169,6 +169,9 @@ export default {
         })
         .catch((error) => {
           console.error('Error fetching recommendations:', error);
+          this.recommendedMovies = [];
+          this.recommendedDirectors = [];
+          this.recommendedActors = [];
         });
     },
     fetchTopArticles() {

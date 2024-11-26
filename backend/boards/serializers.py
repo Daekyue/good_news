@@ -11,7 +11,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'poster_path', 'overview']
+        fields = ['id', 'title', 'overview', 'release_date', 'poster_path']
 
 class DirectorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,4 +21,4 @@ class DirectorSerializer(serializers.ModelSerializer):
 class ActorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Actor
-        fields = ['id', 'name', 'character']
+        fields = ['id', 'name']
