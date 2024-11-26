@@ -11,6 +11,7 @@ import pickle
 from dotenv import load_dotenv
 from movies.models import Movie
 from django.core.cache import cache
+import numpy as np
 
 class NewsDocumentStore:
     """
@@ -20,7 +21,7 @@ class NewsDocumentStore:
     
     def __init__(self, index_file: str = "boards/faiss_index.pkl"):
         # Hugging Face 임베딩 모델 초기화
-        model_name = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-MiniLM-L6-v2")
+        model_name = os.getenv("EMBEDDING_MODEL_NAME", "sentence-transformers/all-mpnet-base-v2")
         self.embeddings = HuggingFaceEmbeddings(model_name=model_name)
         
         # FAISS 벡터 저장소 초기화 또는 로드
@@ -31,7 +32,15 @@ class NewsDocumentStore:
                 self.vectorstore = pickle.load(f)
             print("FAISS 인덱스를 로드했습니다.")
         else:
-            self.vectorstore = FAISS(embedding_function=self.embeddings)
+            # FAISS 기본 인덱스 생성 (코사인 유사도 기반)
+            dimension = len(self.embeddings.embed_query("test"))
+            index = faiss.IndexFlatIP(dimension)  # Inner Product 기반 FAISS 인덱스
+            self.vectorstore = FAISS(
+                index=index,
+                docstore=InMemoryDocstore({}),
+                index_to_docstore_id={},
+                embedding_function=self.embeddings.embed_documents
+            )
             print("새로운 FAISS 인덱스를 생성했습니다.")
     
     def save_index(self):
@@ -57,6 +66,7 @@ class NewsDocumentStore:
         metadata = {
             'title': article['title'],
             'content': article['content'],
+            # 'category': article['category'],
             'keywords': article['keywords']
         }
         
@@ -92,7 +102,7 @@ class NewsDocumentStore:
         self.vectorstore.add_documents(documents)
         self.save_index()
     
-    def find_similar_articles(self, reference_article: Dict, k: int = 5) -> List[Dict]:
+    def find_similar_articles(self, reference_article: Dict, k: int = 6) -> List[Dict]:
         """
         특정 기사를 기준으로 유사한 기사를 검색합니다.
         
@@ -103,27 +113,26 @@ class NewsDocumentStore:
         Returns:
             유사한 뉴스 기사들의 리스트
         """
-        # 기준 기사 임베딩 생성
+        # 기준 기사 임베딩 생성 및 정규화
         processed = self.process_news_article(reference_article)
-        reference_doc = Document(
-            page_content=processed['content'],
-            metadata=processed['metadata']
-        )
+        reference_embedding = self.embeddings.embed_query(processed['content'])
+        reference_embedding = reference_embedding / np.linalg.norm(reference_embedding)
         
         # 유사도 검색 수행
-        docs = self.vectorstore.similarity_search_with_score(
-            query=reference_doc.page_content, 
-            k=k
+        distances, indices = self.vectorstore.index.search(
+            np.array([reference_embedding]), k
         )
         
         # 결과 포매팅
         results = []
-        for doc, score in docs:
+        for idx, distance in zip(indices[0], distances[0]):
+            doc_id = self.vectorstore.index_to_docstore_id[idx]
+            doc = self.vectorstore.docstore.search(doc_id)
             results.append({
-                'title': doc.metadata.get('title', ''),
+                'title': doc.metadata['title'],
                 'content': doc.page_content,
                 'metadata': doc.metadata,
-                'similarity': 1 - score  # 점수를 유사도로 변환
+                'similarity': distance  # 코사인 유사도
             })
             
         return results

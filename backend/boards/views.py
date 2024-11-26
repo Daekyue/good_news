@@ -85,8 +85,8 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
         }
 
         # 유사도 검색 수행
-        relevant_docs = doc_store.find_similar_articles(reference_article, k=3)
-
+        relevant_docs = doc_store.find_similar_articles(reference_article, k=6)
+        relevant_docs = relevant_docs[1:]
         # 유사한 기사의 정보를 가져오기
 
         print(relevant_docs)

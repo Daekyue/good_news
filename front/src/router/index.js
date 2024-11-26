@@ -18,11 +18,6 @@ const routes = [
     component: HomePage,
   },
   {
-    path: '/news-feed',
-    name: 'NewsFeed',
-    component: NewsFeed,
-  },
-  {
     path: '/news',
     name: 'NewsList',
     component: NewsList  

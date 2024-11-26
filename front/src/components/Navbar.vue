@@ -2,7 +2,6 @@
   <nav>
     <div class="nav-left">
       <router-link to="/Home">홈</router-link> |
-      <router-link to="/news-feed">뉴스 피드</router-link> |
       <router-link to="/news">뉴스 기사</router-link>
     </div>
     <div class="nav-right">

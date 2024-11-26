@@ -214,7 +214,7 @@ export default {
   grid-area: wordcloud;
   text-align: center;
   background-color: #ffffff;
-  padding: 20px;
+  padding: 5px;
   border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }

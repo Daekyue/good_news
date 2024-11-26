@@ -28,7 +28,7 @@ class WordCloudAPIView(APIView):
         keyword_freq = Counter(all_keywords)
 
         # 워드클라우드 생성
-        wordcloud = WordCloud(width=1000, height=600, background_color='white').generate_from_frequencies(keyword_freq)
+        wordcloud = WordCloud(width=1500, height=800, background_color='white').generate_from_frequencies(keyword_freq)
         image_path = "/tmp/wordcloud.png"
          
         # 워드클라우드 이미지 저장
