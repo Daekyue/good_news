@@ -158,5 +158,5 @@ if __name__ == "__main__":
         print(f"\n=== 유사한 기사 {i} ===")
         print(f"제목: {result['title']}")
         print(f"유사도: {result['similarity']:.4f}")
-        print(f"내용 미리보기: {result['content'][:200]}...")
+        print(f"내용 미리보기: {result['content'][:100]}...")
         print(result['metadata']['keywords'])

@@ -15,11 +15,10 @@ all_keywords = []
 for article in data:
 
     today = datetime.today()
-    min_date = today - timedelta(days=30)
+    min_date = today - timedelta(days=7)
     date = datetime.strptime(article['date'], "%Y-%m-%d")
 
     if min_date <= date <= today:
-        print(date)
         all_keywords += article['keywords'].split(', ')
 
 
@@ -29,8 +28,8 @@ keyword_freq = Counter(all_keywords)
 
 # 워드클라우드 생성
 wordcloud = WordCloud(
-    width=1000, 
-    height=600, 
+    width=2000, 
+    height=1000, 
     background_color='white'
 ).generate_from_frequencies(keyword_freq)
 
