@@ -112,7 +112,7 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def recommend(self, request):
         user = request.user
-
+        
         # 1. 사용자가 좋아요한 기사들 가져오기
         user_liked_articles = user.liked_articles.all()
 
@@ -125,8 +125,8 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
             }, status=status.HTTP_200_OK)
 
         # 2. 그 기사들을 좋아요한 다른 사용자들 (현재 사용자 제외)
-        other_users = User.objects.filter(liked_articles__in=user_liked_articles).exclude(id=user.id).distinct()
-
+        other_users = User.objects.filter(liked_articles__in=user_liked_articles).distinct()#.exclude(id=user.id).distinct()
+        
         if not other_users.exists():
             return Response({
                 'movies': [],
@@ -135,9 +135,8 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
                 'message': '유사한 관심사를 가진 사용자가 없습니다.'
             }, status=status.HTTP_200_OK)
 
-        # 3. 다른 사용자들이 좋아요한 기사들 (사용자가 이미 좋아요한 기사 제외)
-        other_articles = NewsArticle.objects.filter(liked_users__in=other_users).exclude(id__in=user_liked_articles.values_list('id', flat=True)).distinct()
-
+        # 3. 다른 사용자들이 좋아요한 기사들
+        other_articles = NewsArticle.objects.filter(liked_users__in=other_users).distinct()
         if not other_articles.exists():
             return Response({
                 'movies': [],
@@ -153,6 +152,8 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
                 # 키워드가 쉼표로 구분된 문자열이라고 가정
                 article_keywords = article.keywords.split(',')
                 keywords.update([k.strip() for k in article_keywords])
+        print("여기여기여기여기여기여기여기여기여기여기여기여기여기여기")
+        print(keywords)
 
         if not keywords:
             return Response({
@@ -186,6 +187,7 @@ class NewsArticleViewSet(viewsets.ModelViewSet):
         director_serializer = DirectorSerializer(recommended_directors, many=True)
         actor_serializer = ActorSerializer(recommended_actors, many=True)
 
+        
         return Response({
             'movies': movie_serializer.data,
             'directors': director_serializer.data,

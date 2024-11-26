@@ -12,7 +12,7 @@ class Command(BaseCommand):
         base_url = 'https://api.themoviedb.org/3'
 
         # 1. 장르 데이터 가져오기
-        genre_url = f'{base_url}/genre/movie/list?api_key={api_key}&language=ko-KR'
+        genre_url = f'{base_url}/genre/movie/list?api_key={api_key}'
         genre_response = requests.get(genre_url)
         if genre_response.status_code == 200:
             genres = genre_response.json().get('genres', [])
@@ -27,10 +27,10 @@ class Command(BaseCommand):
             return
 
         # 2. 영화 데이터 가져오기 (예: 인기 영화)
-        total_pages = 9  # 가져올 페이지 수를 설정합니다.
-        start_pages = 41
+        total_pages = 30  # 가져올 페이지 수를 설정합니다.
+        start_pages = 1
         for page in range(start_pages, start_pages + total_pages + 1):
-            movie_url = f'{base_url}/movie/popular?api_key={api_key}&language=ko-KR&page={page}'
+            movie_url = f'{base_url}/movie/popular?api_key={api_key}&page={page}'
             movie_response = requests.get(movie_url)
             if movie_response.status_code == 200:
                 movies = movie_response.json().get('results', [])
@@ -72,7 +72,7 @@ class Command(BaseCommand):
         # 3. 감독과 배우 데이터 가져오기
         movies = Movie.objects.all()
         for movie in movies:
-            credits_url = f'{base_url}/movie/{movie.tmdb_id}/credits?api_key={api_key}&language=ko-KR'
+            credits_url = f'{base_url}/movie/{movie.tmdb_id}/credits?api_key={api_key}'
             credits_response = requests.get(credits_url)
             if credits_response.status_code == 200:
                 credits = credits_response.json()
