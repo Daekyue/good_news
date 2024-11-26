@@ -15,11 +15,7 @@
           </div>
           <!-- 키워드 태그 섹션 -->
           <div class="news-detail-keywords">
-            <span
-              v-for="(keyword, index) in article.keywords.split(',')"
-              :key="index"
-              class="keyword-tag"
-            >
+            <span v-for="(keyword, index) in article.keywords.split(',')" :key="index" class="keyword-tag">
               {{ keyword.trim() }}
             </span>
           </div>
@@ -40,23 +36,15 @@
         <h2>AI News Assistant</h2>
         <p>보고 계신 뉴스에 대해 궁금한 점이 있으시면 언제든지 질문해 주세요!</p>
         <div class="chat-container">
-          <div
-            v-for="(message, index) in chatbotMessages"
-            :key="index"
-            :class="['chat-message', message.role]"
-          >
+          <div v-for="(message, index) in chatbotMessages" :key="index" :class="['chat-message', message.role]">
             <div class="message-bubble">
               {{ message.content }}
             </div>
           </div>
         </div>
         <div class="chat-input-container">
-          <input
-            v-model="chatbotInput"
-            @keyup.enter="sendChatbotMessage"
-            type="text"
-            placeholder="Enter your question..."
-          />
+          <input v-model="chatbotInput" @keyup.enter="sendChatbotMessage" type="text"
+            placeholder="Enter your question..." />
           <button @click="sendChatbotMessage" class="send-button">
             <span class="send-button-icon">📨</span>
           </button>
@@ -174,6 +162,7 @@ export default {
           `http://localhost:8000/api/chatbot/`,
           {
             user_input: this.chatbotInput,
+            movie_id: this.id, // movie_id 추가
           },
           {
             headers: {
@@ -203,14 +192,14 @@ export default {
 </script>
 
 <style scoped>
-
 /* 뉴스 페이지 전체 레이아웃 */
 .news-page-container {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   padding: 20px;
-  background-color: #f0f2f5; /* 전체 배경색 추가 */
+  background-color: #f0f2f5;
+  /* 전체 배경색 추가 */
 }
 
 /* 왼쪽 섹션 래퍼 (뉴스 상세보기 및 챗봇) */
@@ -224,8 +213,10 @@ export default {
 .news-detail-section {
   background-color: #ffffff;
   padding: 20px;
-  border-radius: 20px; /* 둥근 모서리 수정 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 그림자 수정 */
+  border-radius: 20px;
+  /* 둥근 모서리 수정 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  /* 그림자 수정 */
 }
 
 .news-detail-container {
