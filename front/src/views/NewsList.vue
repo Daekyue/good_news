@@ -44,12 +44,8 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="news_list_entire">
     <h1 class="news_list_head">뉴스 리스트</h1>
-    <div class="news_separator"></div>
-    <div class="news_description">
-      당신이 원하는 뉴스, 이제 AI가 직접 추천해드립니다!
-    </div>
 
     <!-- 카테고리 선택 버튼 -->
     <div class="category-buttons">
@@ -91,33 +87,95 @@ export default {
 
 
 <style scoped>
+/* 뉴스 리스트 스타일 - CSS */
+.news_list_entire{
+  background-color: #1a1a1a;
+}
+
+body {
+  background-color: #1a1a1a; /* 전체 배경을 검은색으로 설정 */
+  color: #f5f5f5; /* 기본 글씨색을 밝게 */
+  font-family: 'Arial', sans-serif;
+}
+
 .news_list_head {
   margin-bottom: 10px;
+  font-size: 2.8em;
+  font-weight: bold;
+  color: #e0b534;
+  text-align: center;
+  background: linear-gradient(to right, #e0b534, #ffb84d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-color: #222;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .news_separator {
-  border-top: 1px solid #e0e0e0;
+  border-top: 2px solid #e0b534;
+  margin: 20px 0;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.news_description {
+  font-size: 1.5em;
+  color: #bbbbbb;
+  margin-bottom: 30px;
+  text-align: center;
+  background-color: #333;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .news_article {
   margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  padding: 20px;
+  border: 1px solid #444;
+  border-radius: 15px;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .news_article:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+}
+
+.news_article h2 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #e0b534;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.news_article h2 a {
+  text-decoration: none;
+  color: #e0b534;
+  transition: color 0.3s;
+}
+
+.news_article h2 a:hover {
+  color: #f5f5f5;
+}
+
+.news_article p {
+  font-size: 1em;
+  color: #dddddd;
+  margin-bottom: 10px;
 }
 
 /* 좋아요 수와 조회수 섹션 */
 .likes-views-container {
   margin-top: 10px;
   font-size: 0.9em;
-  color: #777;
+  color: #aaaaaa;
   display: flex;
   gap: 15px;
 }
@@ -133,12 +191,14 @@ export default {
 
 .keyword-tag {
   display: inline-block;
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: #444;
+  color: #e0b534;
   padding: 5px 10px;
   margin: 5px 5px 0 0;
   border-radius: 15px;
   font-size: 0.9em;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* 카테고리 버튼 스타일 */
@@ -147,27 +207,35 @@ export default {
   flex-wrap: wrap;
   gap: 10px;
   margin: 20px 0;
-  border: 1px solid #e0e0e0;
-  padding: 10px;
-  border-radius: 10px;
+  border: 1px solid #444;
+  padding: 15px;
+  border-radius: 15px;
+  background-color: #2b2b2b;
 }
 
 .category-button {
   padding: 10px 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  background-color: #ffffff;
+  border: 1px solid #e0b534;
+  border-radius: 15px;
+  background-color: #333;
+  color: #e0b534;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, transform 0.2s;
+  font-weight: bold;
 }
 
 .category-button:hover {
-  background-color: #f0f0f0;
+  background-color: #e0b534;
+  color: #1a1a1a;
+  transform: scale(1.05);
 }
 
 .category-button.active {
-  background-color: #007bff;
-  color: #ffffff;
-  border-color: #007bff;
+  background-color: #e0b534;
+  color: #1a1a1a;
+  border-color: #e0b534;
+  font-weight: bold;
 }
+
+
 </style>

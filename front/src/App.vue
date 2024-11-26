@@ -19,6 +19,7 @@ export default {
 <style>
 /* 전역 스타일은 여기에 작성 */
 #app {
+  background-color: #1a1a1a;
   font-family: Arial, sans-serif;
   color: #2c3e50;
   margin-top: 60px;

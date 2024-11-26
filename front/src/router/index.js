@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
-import NewsFeed from '../views/NewsFeed.vue';
 import NewsList from '../views/NewsList.vue';
 import NewsDetail from '../views/NewsDetail.vue'
 import Login from '../views/Login.vue'

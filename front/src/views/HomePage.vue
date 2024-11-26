@@ -196,6 +196,8 @@ export default {
 </script>
 
 <style scoped>
+/* 영화 웹페이지 스타일 - CSS */
+/* 영화 웹페이지 스타일 - CSS */
 .home-page-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -204,123 +206,221 @@ export default {
     'wordcloud wordcloud wordcloud'
     'recommend1 recommend2 recommend3'
     'liked liked top-articles';
-  gap: 20px;
-  padding: 20px;
-  background-color: #f0f2f5;
+  gap: 30px;
+  padding: 40px;
+  background-color: #1a1a1a; /* 영화관 느낌의 어두운 배경 */
+  color: #f5f5f5; /* 전체적인 글씨색을 밝게 */
+  font-family: 'Arial', sans-serif;
 }
 
 /* 워드클라우드 섹션 */
 .wordcloud-section {
   grid-area: wordcloud;
   text-align: center;
-  background-color: #ffffff;
-  padding: 5px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #2b2b2b; /* 어두운 배경 색상 */
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.wordcloud-section h2 {
+  font-size: 2.2em;
+  margin-bottom: 20px;
+  color: #e0b534; /* 금색으로 영화 시상식 느낌 */
+  font-weight: bold;
 }
 
 .wordcloud-image {
   max-width: 100%;
   height: auto;
+  border-radius: 15px;
+  border: 3px solid #e0b534; /* 이미지 테두리에 금색 효과 */
 }
 
 /* 추천 시스템 섹션 */
 .recommend-section {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-#recommend1 {
-  grid-area: recommend1;
-}
-
-#recommend2 {
-  grid-area: recommend2;
-}
-
-#recommend3 {
-  grid-area: recommend3;
+  background-color: #2b2b2b;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .recommend-section h2 {
-  font-size: 1.5em;
+  font-size: 1.8em;
   margin-bottom: 15px;
-  color: #333;
+  color: #e0b534;
+  font-weight: bold;
 }
 
-.recommend-section .news-article h3 {
-  font-size: 1.2em;
+.movie-item h3 {
+  font-size: 1.6em;
   margin-bottom: 10px;
-  color: #007bff;
+  color: #f5f5f5;
+  font-weight: bold;
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.recommend-section .news-article p {
+.movie-item p {
   font-size: 1em;
-  color: #555;
+  color: #bbbbbb;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  font-size: 1.3em;
+  margin: 10px 0;
+  color: #f5f5f5;
+  font-weight: bold;
+  font-style: italic;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* 내가 좋아요 누른 뉴스 섹션 */
 .liked-articles-section {
   grid-area: liked;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #2b2b2b;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .liked-articles-section h1 {
-  font-size: 1.8em;
+  font-size: 2.2em;
   margin-bottom: 20px;
-  color: #333;
+  color: #e0b534;
+  font-weight: bold;
 }
 
 .news-article {
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 25px;
+  padding: 20px;
+  border: 1px solid #444;
+  border-radius: 15px;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s;
+}
+
+.news-article:hover {
+  transform: translateY(-5px);
 }
 
 .news-article h2 {
-  font-size: 1.5em;
+  font-size: 1.6em;
   margin-bottom: 10px;
-  color: #007bff;
+  color: #e0b534;
+  font-weight: bold;
 }
 
 .news-article h2 a {
   text-decoration: none;
+  color: #e0b534;
+  transition: color 0.3s;
 }
 
 .news-article h2 a:hover {
-  text-decoration: underline;
+  color: #f5f5f5;
 }
 
 .article-info {
   font-size: 0.9em;
-  color: #777;
+  color: #aaaaaa;
   margin-bottom: 10px;
   display: flex;
-  gap: 15px;
+  gap: 20px;
 }
 
 .news-article p {
   font-size: 1em;
-  color: #555;
+  color: #dddddd;
 }
 
 /* 일주일간 조회수가 높은 기사 섹션 */
 .top-articles-section {
   grid-area: top-articles;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: #2b2b2b;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .top-articles-section h1 {
-  font-size: 1.8em;
+  font-size: 2.2em;
   margin-bottom: 20px;
-  color: #333;
+  color: #e0b534;
+  font-weight: bold;
 }
+
+/* 전반적인 스타일 향상 */
+h1, h2, h3, p, span, li {
+  letter-spacing: 0.5px;
+}
+
+a {
+  transition: color 0.3s, transform 0.2s;
+}
+
+a:hover {
+  color: #e0b534;
+  transform: scale(1.05);
+}
+
+.box-shadow:hover {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* 버튼 스타일 */
+button {
+  background-color: #e0b534;
+  color: #1a1a1a;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-3px);
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: 1px solid #e0b534;
+  border-radius: 5px;
+  background-color: #2b2b2b;
+  color: #e0b534;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination button:hover {
+  background-color: #e0b534;
+  color: #1a1a1a;
+}
+
+.pagination button.active {
+  background-color: #e0b534;
+  color: #1a1a1a;
+  font-weight: bold;
+}
+
+
 </style>

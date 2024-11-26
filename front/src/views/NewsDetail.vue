@@ -198,8 +198,9 @@ export default {
   grid-template-columns: 2fr 1fr;
   gap: 20px;
   padding: 20px;
-  background-color: #f0f2f5;
-  /* 전체 배경색 추가 */
+  background-color: #000;
+  color: #f5f5f5;
+  font-family: 'Arial', sans-serif;
 }
 
 /* 왼쪽 섹션 래퍼 (뉴스 상세보기 및 챗봇) */
@@ -211,12 +212,10 @@ export default {
 
 /* 뉴스 상세보기 섹션 스타일 */
 .news-detail-section {
-  background-color: #ffffff;
+  background-color: #222;
   padding: 20px;
   border-radius: 20px;
-  /* 둥근 모서리 수정 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  /* 그림자 수정 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .news-detail-container {
@@ -225,14 +224,15 @@ export default {
 }
 
 .news-detail-title {
-  font-size: 2.5em;
+  font-size: 2.8em;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #333;
+  color: #e0b534;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
 .news-detail-info {
-  color: #888;
+  color: #bbbbbb;
   font-size: 0.9em;
   margin-bottom: 20px;
   display: flex;
@@ -241,9 +241,9 @@ export default {
 
 .news-detail-content {
   line-height: 1.8;
-  font-size: 1.1em;
+  font-size: 1.2em;
   margin-bottom: 20px;
-  color: #444;
+  color: #dddddd;
 }
 
 /* 키워드 태그 스타일 */
@@ -253,12 +253,14 @@ export default {
 
 .keyword-tag {
   display: inline-block;
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #444;
+  color: #e0b534;
   padding: 8px 12px;
   margin: 5px 5px 0 0;
   border-radius: 20px;
   font-size: 0.9em;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* 좋아요 버튼 섹션 */
@@ -267,8 +269,8 @@ export default {
 }
 
 .like-button {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #c62828;
+  color: #ffffff;
   border: none;
   padding: 12px 20px;
   border-radius: 25px;
@@ -278,31 +280,31 @@ export default {
 }
 
 .like-button.liked {
-  background-color: #c62828;
-  color: #ffffff;
+  background-color: #e0b534;
+  color: #1a1a1a;
 }
 
 .like-button:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* AI 뉴스비서 섹션 스타일 */
 .chatbot-section {
-  background-color: #ffffff;
+  background-color: #222;
   padding: 20px;
   border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .chatbot-section h2 {
-  font-size: 1.8em;
+  font-size: 2em;
   margin-bottom: 10px;
-  color: #333;
+  color: #e0b534;
 }
 
 .chatbot-section p {
   margin-bottom: 20px;
-  color: #666;
+  color: #bbbbbb;
 }
 
 .chat-container {
@@ -310,7 +312,7 @@ export default {
   overflow-y: auto;
   margin-bottom: 10px;
   padding: 10px;
-  background-color: #f9f9f9;
+  background-color: #333;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -344,8 +346,8 @@ export default {
 }
 
 .chat-message.assistant .message-bubble {
-  background-color: #f1f0f0;
-  color: #333;
+  background-color: #444;
+  color: #e0b534;
   border-bottom-left-radius: 5px;
 }
 
@@ -361,18 +363,20 @@ export default {
   padding: 12px 20px;
   font-size: 1em;
   border-radius: 25px;
-  border: 1px solid #ccc;
+  border: 1px solid #555;
   outline: none;
+  background-color: #333;
+  color: #f5f5f5;
   transition: border-color 0.3s;
 }
 
 .chat-input-container input[type='text']:focus {
-  border-color: #007bff;
+  border-color: #e0b534;
 }
 
 .send-button {
-  background-color: #007bff;
-  color: #ffffff;
+  background-color: #e0b534;
+  color: #1a1a1a;
   border: none;
   margin-left: 10px;
   padding: 12px;
@@ -382,7 +386,8 @@ export default {
 }
 
 .send-button:hover {
-  background-color: #0056b3;
+  background-color: #c62828;
+  color: #ffffff;
 }
 
 .send-button-icon {
@@ -391,19 +396,19 @@ export default {
 
 /* 관련 기사 섹션 스타일 */
 .related-articles-section {
-  background-color: #ffffff;
+  background-color: #222;
   padding: 20px;
   border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   position: sticky;
   top: 20px;
   align-self: start;
 }
 
 .related-articles-section h2 {
-  font-size: 1.5em;
+  font-size: 1.8em;
   margin-bottom: 15px;
-  color: #333;
+  color: #e0b534;
 }
 
 .related-articles-list {
@@ -416,22 +421,25 @@ export default {
 }
 
 .related-article-item h3 {
-  font-size: 1em;
+  font-size: 1.1em;
   margin: 0 0 5px;
   color: #007bff;
 }
 
 .related-article-item h3 a {
   text-decoration: none;
+  color: #e0b534;
+  transition: color 0.3s;
 }
 
 .related-article-item h3 a:hover {
-  text-decoration: underline;
+  color: #f5f5f5;
 }
 
 .related-article-item p {
   font-size: 0.9em;
-  color: #777;
+  color: #bbbbbb;
   margin: 0;
 }
+
 </style>
